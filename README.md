@@ -17,7 +17,7 @@ Scavogl Rework es una configuración competitiva para Left 4 Dead 2, diseñada p
 - Solo permite el uso de Hunters como Infectados Especiales.
 
 ## Instalación
-1. T1 ZM requiere el proyecto base [L4D2-Competitive-Rework](https://github.com/SirPlease/L4D2-Competitive-Rework). Descárgalo e instálalo primero.
+1. Scavogl Rework requiere el proyecto base [L4D2-Competitive-Rework](https://github.com/SirPlease/L4D2-Competitive-Rework). Descárgalo e instálalo primero.
 2. Descarga los archivos desde el [repositorio de GitHub](https://github.com/AoC-Gamers/scavogl_rework).
 3. Extrae los archivos en la carpeta principal de tu servidor.
 4. Configura los archivos según tus necesidades (ver [Configuración](wiki/Configuración.md)).
