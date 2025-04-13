@@ -137,10 +137,10 @@ void Event_RoundStart(Event hEvent, const char[] sName, bool dontBroadcast)
 // if a repeatted timer is created and the round is end, free all timer handles.
 void Event_RoundEnd(Event hEvent, const char[] sName, bool dontBroadcast)
 {
-	for (int i = 0; i < MAX_ENTITIES; i++)
+	for (int i = 1; i < MAX_ENTITIES; i++)
 	{
 		if (g_hTimer[i - 1] != null && g_hTimer[i - 1] != INVALID_HANDLE)
-			delete g_hTimer[i];
+			delete g_hTimer[i - 1];
 	}
 }
 
