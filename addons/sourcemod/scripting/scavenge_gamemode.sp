@@ -14,7 +14,6 @@
 			G L O B A L   V A R S
 *****************************************************************/
 
-#define PLUGIN_VERSION "1.2"
 #define CONSOLE		   0
 
 ConVar
@@ -35,6 +34,9 @@ ConVar
 
 Handle
 	g_hVote;
+
+bool
+	g_bReadyupAvailable = false;
 
 enum Mode
 {
@@ -75,7 +77,7 @@ stock const char sHunterName[mode_size][] = {
 	"scavh_none",
 	"1v1 ScavHunters",
 	"2v2 ScavHunters",
-	"2v2 ScavHunters",
+	"3v3 ScavHunters",
 	"ScavHunters"
 };
 
@@ -97,7 +99,7 @@ public Plugin myinfo =
 	name		= "Scavenge GameMode",
 	author		= "lechuga",
 	description = "Manages cvar related to the game mode and allows changing it",
-	version		= PLUGIN_VERSION,
+	version		= "1.2.1",
 	url			= "https://github.com/AoC-Gamers/scavogl_rework"
 };
 
@@ -114,16 +116,22 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnLibraryAdded(const char[] sName)
 {
-	if (!StrEqual(sName, "readyup"))
-		return;
+	if (StrEqual(sName, "readyup"))
+	{
+		g_bReadyupAvailable = true;
+		l4d_ready_cfg_name = FindConVar("l4d_ready_cfg_name");
+	}
+}
 
-	l4d_ready_cfg_name = FindConVar("l4d_ready_cfg_name");
+public void OnLibraryRemoved(const char[] sName)
+{
+	if (StrEqual(sName, "readyup"))
+		g_bReadyupAvailable = false;
 }
 
 public void OnPluginStart()
 {
 	LoadTranslation("scavenge_gamemode.phrases");
-	CreateConVar("sm_scavenge_gamemode_version", PLUGIN_VERSION, "Scavenge Rounds version", FCVAR_NOTIFY, true, 0.0);
 
 	g_cvarDebug			   = CreateConVar("sm_scavenge_gamemode_debug", "0", "Enable debug", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvarEnable		   = CreateConVar("sm_scavenge_gamemode_enable", "1", "Enable Scavenge Rounds", FCVAR_NOTIFY, true, 0.0, true, 1.0);
@@ -137,6 +145,8 @@ public void OnPluginStart()
 	z_versus_charger_limit = FindConVar("z_versus_charger_limit");
 	z_versus_spitter_limit = FindConVar("z_versus_spitter_limit");
 	survivor_limit		   = FindConVar("survivor_limit");
+	l4d_ready_cfg_name	   = FindConVar("l4d_ready_cfg_name");
+	g_bReadyupAvailable	   = LibraryExists("readyup");
 
 	z_versus_hunter_limit.AddChangeHook(OnVersusLimitChange);
 	z_versus_boomer_limit.AddChangeHook(OnVersusLimitChange);
@@ -218,7 +228,7 @@ public void OnPluginEnd()
 	z_versus_charger_limit.RestoreDefault();
 	z_versus_spitter_limit.RestoreDefault();
 
-	if (g_cvarCFGName.BoolValue)
+	if (g_cvarCFGName.BoolValue && l4d_ready_cfg_name != null)
 		l4d_ready_cfg_name.RestoreDefault();
 }
 
@@ -338,7 +348,7 @@ bool CreateVote(int iClient, GameMode gm)
 		return false;
 	}
 
-	if (!IsInReady())
+	if (g_bReadyupAvailable && !IsInReady())
 	{
 		CPrintToChat(iClient, "%t %t", "Tag", "MatchInProgress");
 		return false;
@@ -458,6 +468,9 @@ void GetGamemode(GameMode gm, const char[] sGamemode)
  */
 void ChangeCFGName(GameMode gm)
 {
+	if (l4d_ready_cfg_name == null)
+		return;
+
 	char
 		sConfigName[32];
 	
@@ -610,10 +623,27 @@ void ChangeGameMode(Mode mode, bool bIshunter, bool bAnnounce = true)
  */
 void CurrentGameMode(GameMode gm)
 {
+	if (l4d_ready_cfg_name == null)
+	{
+		gm.ishunter = false;
+		gm.mode		= mode_none;
+		strcopy(gm.name, sizeof(gm.name), sScavName[mode_none]);
+		return;
+	}
+
 	char
 		sConfigName[32];
 
-	gm.mode = view_as<Mode>(survivor_limit.IntValue);
+	int iMode = survivor_limit.IntValue;
+	if (iMode < view_as<int>(mode_none) || iMode >= view_as<int>(mode_size))
+	{
+		gm.ishunter = false;
+		gm.mode		= mode_none;
+		strcopy(gm.name, sizeof(gm.name), sScavName[mode_none]);
+		return;
+	}
+
+	gm.mode = view_as<Mode>(iMode);
 
 	l4d_ready_cfg_name.GetString(sConfigName, sizeof(sConfigName));
 
