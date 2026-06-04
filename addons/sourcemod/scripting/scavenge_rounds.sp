@@ -14,8 +14,6 @@
 			G L O B A L   V A R S
 *****************************************************************/
 
-#define PLUGIN_VERSION "1.0"
-
 ConVar
 	g_cvarDebug,
 	g_cvarEnable,
@@ -23,7 +21,8 @@ ConVar
 	g_cvarRestartRound;
 
 Handle
-	g_hVote;
+	g_hVote,
+	g_hRestartTimer;
 
 bool
 	g_bConfoglAvailable = false,
@@ -42,7 +41,7 @@ public Plugin myinfo =
 	name		= "Scavenge Rounds",
 	author		= "lechuga",
 	description = "Allows you to adjust the number of rounds",
-	version		= PLUGIN_VERSION,
+	version		= "1.0.1",
 	url			= "https://github.com/lechuga16/scavogl_rework"
 };
 
@@ -61,31 +60,35 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 public void OnAllPluginsLoaded()
 {
 	g_bConfoglAvailable = LibraryExists("confogl");
+	g_bReadyupAvailable = LibraryExists("readyup");
 }
 
 public void OnLibraryRemoved(const char[] sName)
 {
 	if (StrEqual(sName, "confogl"))
 		g_bConfoglAvailable = false;
+	else if (StrEqual(sName, "readyup"))
+		g_bReadyupAvailable = false;
 }
 
 public void OnLibraryAdded(const char[] sName)
 {
 	if (StrEqual(sName, "confogl"))
 		g_bConfoglAvailable = true;
+	else if (StrEqual(sName, "readyup"))
+		g_bReadyupAvailable = true;
 }
 
 public void OnPluginStart()
 {
 	LoadTranslation("scavenge_rounds.phrases");
-	CreateConVar("sm_scavenge_rounds_version", PLUGIN_VERSION, "Scavenge Rounds version", FCVAR_NOTIFY, true, 0.0);
 
 	g_cvarDebug		   = CreateConVar("sm_scavenge_rounds_debug", "0", "Enable debug", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvarEnable	   = CreateConVar("sm_scavenge_rounds_enable", "1", "Enable Scavenge Rounds", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvarRounds	   = CreateConVar("sm_scavenge_rounds", "5", "number of rounds (1, 3 and 5 allowed)", FCVAR_NOTIFY, true, 1.0, true, 5.0);
 	g_cvarRestartRound = CreateConVar("sm_scavenge_restart_round", "1", "Restart round after finish match", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
-	HookEvent("round_start", Event_RoundStart, EventHookMode_Pre);
+	HookEvent("scavenge_round_start", Event_ScavengeRoundStart, EventHookMode_Pre);
 	HookEvent("scavenge_match_finished", Event_ScavMatchFinished, EventHookMode_Post);
 	g_cvarRounds.AddChangeHook(OnRoundsChange);
 
@@ -208,6 +211,13 @@ public void MatchVoteResultHandler(Handle vote, int num_votes, int num_clients, 
 public void OnPluginEnd()
 {
 	FindConVar("scavenge_match_finished_delay").RestoreDefault();
+
+	if (g_hRestartTimer != null)
+	{
+		delete g_hRestartTimer;
+		g_hRestartTimer = null;
+	}
+
 	if (!IsBuiltinVoteInProgress())
 		return;
 
@@ -237,7 +247,7 @@ public void OnRoundsChange(ConVar Convar, const char[] sOldValue, const char[] s
 			C A L L B A C K   F U N C T I O N S
 ****************************************************************/
 
-void Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
+void Event_ScavengeRoundStart(Event event, const char[] name, bool dontBroadcast)
 {
 	if (!g_cvarEnable.BoolValue || !L4D2_IsScavengeMode())
 		return;
@@ -256,9 +266,12 @@ public void Event_ScavMatchFinished(Event event, const char[] name, bool dontBro
 	if (!g_cvarEnable.BoolValue || !g_cvarRestartRound.BoolValue)
 		return;
 
+	if (g_hRestartTimer != null)
+		delete g_hRestartTimer;
+
 	FindConVar("scavenge_match_finished_delay").SetInt(30);
 	g_iTimerRestartMatch = 10;
-	CreateTimer(1.0, Timer_RestartMatch, _, TIMER_REPEAT);
+	g_hRestartTimer = CreateTimer(1.0, Timer_RestartMatch, _, TIMER_REPEAT);
 }
 
 /*****************************************************************
@@ -269,6 +282,7 @@ Action Timer_RestartMatch(Handle Timer)
 {
 	if(g_iTimerRestartMatch == 0)
 	{
+		g_hRestartTimer = null;
 		L4D2_Rematch();
 		return Plugin_Stop;
 	}
@@ -297,15 +311,23 @@ void ChangeRounds(int iRounds)
  */
 void ResetRoundNumber()
 {
+	Handle hGameData = LoadGameConfigFile("left4dhooks.l4d2");
+	if (hGameData == null)
+		ThrowError("Failed to load gamedata file left4dhooks.l4d2");
+
 	StartPrepSDKCall(SDKCall_GameRules);
-	PrepSDKCall_SetFromConf(LoadGameConfigFile("left4dhooks.l4d2"), SDKConf_Signature, "CTerrorGameRules_ResetRoundNumber");
+	PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "CTerrorGameRules_ResetRoundNumber");
 	Handle func = EndPrepSDKCall();
 
 	if (func == INVALID_HANDLE)
+	{
+		CloseHandle(hGameData);
 		ThrowError("Failed to end prep sdk call");
+	}
 
 	SDKCall(func);
 	CloseHandle(func);
+	CloseHandle(hGameData);
 }
 
 /**

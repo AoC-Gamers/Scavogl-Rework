@@ -47,7 +47,9 @@ public void OnPluginStart()
 
 	HookEvent("gascan_pour_completed", Event_GascanPourCompleted, EventHookMode_PostNoCopy);
 	HookEvent("scavenge_round_start", Event_ScavRoundStart, EventHookMode_PostNoCopy);
-	HookEvent("round_end", Event_RoundEnd, EventHookMode_PostNoCopy);
+	HookEvent("scavenge_round_finished", Event_ScavRoundFinished, EventHookMode_PostNoCopy);
+	HookEvent("scavenge_match_finished", Event_ScavMatchFinished, EventHookMode_PostNoCopy);
+	HookEvent("round_end", Event_RoundEndFallback, EventHookMode_PostNoCopy);
 
 	LoadTranslation("scavenge_quick_end.phrases");
 
@@ -57,7 +59,7 @@ public void OnPluginStart()
 //--------
 //	Cmd
 //--------
-public Action Cmd_QuaryTime(int client, any args)
+public Action Cmd_QuaryTime(int client, int args)
 {
 	if (!g_bInScavengeRound)
 		return Plugin_Handled;
@@ -87,7 +89,22 @@ public Action Cmd_QuaryTime(int client, any args)
 //----------
 //	Events
 //----------
-public void Event_RoundEnd(Event hEvent, const char[] name, bool dontBroadcast)
+public void Event_ScavRoundFinished(Event hEvent, const char[] name, bool dontBroadcast)
+{
+	CloseScavengeRound();
+}
+
+public void Event_ScavMatchFinished(Event hEvent, const char[] name, bool dontBroadcast)
+{
+	CloseScavengeRound();
+}
+
+public void Event_RoundEndFallback(Event hEvent, const char[] name, bool dontBroadcast)
+{
+	CloseScavengeRound();
+}
+
+void CloseScavengeRound()
 {
 	if (g_bInScavengeRound)
 		PrintRoundEndTimeData(g_bInSecondHalf);
@@ -99,7 +116,7 @@ public void Event_RoundEnd(Event hEvent, const char[] name, bool dontBroadcast)
 
 public void Event_ScavRoundStart(Event hEvent, const char[] name, bool dontBroadcast)
 {
-	g_bInSecondHalf		= view_as<bool>(GameRules_GetProp("m_bInSecondHalfOfRound"));
+	g_bInSecondHalf		= !hEvent.GetBool("firsthalf");
 	g_bInScavengeRound	= true;
 	g_flDefaultLossTime = 0.0;
 	g_eEndType			= QE_None;
@@ -107,15 +124,18 @@ public void Event_ScavRoundStart(Event hEvent, const char[] name, bool dontBroad
 	if (g_bInScavengeRound && g_bInSecondHalf)
 	{
 		int iScavengeItemsGoal = GameRules_GetProp("m_nScavengeItemsGoal");
+		int iFirstHalfScore = GetScavengeTeamScore(3);
+		float flFirstHalfDuration = GetScavengeRoundDuration(3);
+
 		// fully completed or totally lost?
-		if (GetScavengeTeamScore(3) == iScavengeItemsGoal)
+		if (iFirstHalfScore == iScavengeItemsGoal)
 			g_eEndType = QE_AchievedTargetSetDeadLine;
-		else if (GetScavengeTeamScore(3) == 0)
+		else if (iFirstHalfScore == 0)
 			g_eEndType = QE_WhoSurvivedLonger;
 
 		// record the loss dead line.
-		if (GetScavengeTeamScore(3) == iScavengeItemsGoal || GetScavengeTeamScore(3) == 0)
-			g_flDefaultLossTime = GameRules_GetPropFloat("m_flRoundStartTime") + GetScavengeRoundDuration(3) + SAFETY_BUFFER_TIME;
+		if (iFirstHalfScore == iScavengeItemsGoal || iFirstHalfScore == 0)
+			g_flDefaultLossTime = GameRules_GetPropFloat("m_flRoundStartTime") + flFirstHalfDuration + SAFETY_BUFFER_TIME;
 	}
 }
 

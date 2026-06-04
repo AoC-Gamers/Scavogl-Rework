@@ -6,7 +6,6 @@
 #include <sdkhooks>
 #include <colors>
 
-#define PLUGIN_VERSION "3.0.1"
 #define CONFIG_PATH	"data/l4d2_scav_gascan_selfburn.cfg"
 
 #define DEBUG 0
@@ -19,7 +18,7 @@ ConVar
 StringMap g_hCoordinateMap;
 Handle g_hTimer[MAX_ENTITIES] = {null, ...};
 
-bool g_bEnableLimit, g_bIsOutBound[MAX_ENTITIES];
+bool g_bEnableLimit, g_bHasMapConfig, g_bIsOutBound[MAX_ENTITIES], g_bIsHooked[MAX_ENTITIES];
 int g_iBurnLimit, g_iBurnedCount = 0;
 
 char g_sPath[128];
@@ -30,7 +29,7 @@ public Plugin myinfo =
 	name = "[L4D2] Scavenge Gascan Self Burn",
 	author = "ratchetx, blueblur",
 	description = "Burn unreachable gascans with custom settings in scavenge mode.",
-	version	= PLUGIN_VERSION,
+	version	= "3.0.2",
 	url	= "https://github.com/blueblur0730/modified-plugins"
 };
 
@@ -42,8 +41,6 @@ public APLRes AskPluginLoad2(Handle plugin, bool late, char[] error, int errMax)
 
 public void OnPluginStart()
 {
-	CreateConVar("l4d2_scav_gascan_selfburn_version", PLUGIN_VERSION, "Plugin version", FCVAR_NOTIFY | FCVAR_DONTRECORD);
-
 	g_hcvarEnableLimit = CreateConVar("l4d2_scav_gascan_burned_limit_enable", "0", "Enable Limited Gascan burn", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_hcvarBurnLimit = CreateConVar("l4d2_scav_gascan_burned_limit", "4", "Limits the max amount of gascan that can get burned if they are out of bounds.", FCVAR_NOTIFY, true, 0.0);
 
@@ -52,8 +49,10 @@ public void OnPluginStart()
 	SetCvar();
 
 	BuildPath(Path_SM, g_sPath, sizeof(g_sPath), CONFIG_PATH);
-	HookEvent("round_start", Event_RoundStart, EventHookMode_PostNoCopy);
-	HookEvent("round_end", Event_RoundEnd, EventHookMode_PostNoCopy);
+	HookEvent("scavenge_round_start", Event_ScavengeRoundStart, EventHookMode_PostNoCopy);
+	HookEvent("scavenge_round_finished", Event_ScavengeRoundFinished, EventHookMode_PostNoCopy);
+	HookEvent("scavenge_match_finished", Event_ScavengeMatchFinished, EventHookMode_PostNoCopy);
+	HookEvent("round_end", Event_RoundEndFallback, EventHookMode_PostNoCopy);
 	LoadTranslation("l4d2_scav_gascan_selfburn.phrases");
 
 	if (g_bLateLoad)
@@ -84,8 +83,12 @@ void OnMapStart_Post()
 	if (!IsScavengeMode())
 		return;
 
-	if (g_hCoordinateMap == null)
-		g_hCoordinateMap = new StringMap();
+	ResetTrackedEntities();
+
+	if (g_hCoordinateMap != null)
+		delete g_hCoordinateMap;
+
+	g_hCoordinateMap = new StringMap();
 
 	char sMapName[128];
 	GetCurrentMap(sMapName, sizeof(sMapName));
@@ -99,7 +102,7 @@ void OnMapStart_Post()
 
 void HookEntityPost()
 {
-	if (!IsScavengeMode())
+	if (!IsScavengeMode() || !g_bHasMapConfig)
 		return;
 
 	for (int i = 0; i < MAX_ENTITIES; i++)
@@ -111,61 +114,111 @@ void HookEntityPost()
 		if (i != 0 && i > MaxClients && GetEntityClassname(i, sBuffer, sizeof(sBuffer)))
 		{
 			if (strcmp(sBuffer, "weapon_gascan") == 0)
-				SDKHook(i, SDKHook_VPhysicsUpdatePost, OnVPhysicsUpdatePost);
+				HookGascanEntity(i);
 		}
 	}
 }
 
 public void OnMapEnd()
 {
+	ResetTrackedEntities();
+	g_bHasMapConfig = false;
+
 	if (g_hCoordinateMap != null)
 		delete g_hCoordinateMap;
 }
 
 public void OnPluginEnd()	// you wont unload this plugin during the map right?
 {
+	ResetTrackedEntities();
+	g_bHasMapConfig = false;
+
 	if (g_hCoordinateMap != null)
 		delete g_hCoordinateMap;
 }
 
-// reset count on every round start, which is triggered in every scavenge round start.
-void Event_RoundStart(Event hEvent, const char[] sName, bool dontBroadcast)
+// Reset per-half state on the authoritative Scavenge half start.
+void Event_ScavengeRoundStart(Event hEvent, const char[] sName, bool dontBroadcast)
 {
 	g_iBurnedCount = 0;
 }
 
-// if a repeatted timer is created and the round is end, free all timer handles.
-void Event_RoundEnd(Event hEvent, const char[] sName, bool dontBroadcast)
+// Clean up tracking on the authoritative end of a Scavenge half.
+void Event_ScavengeRoundFinished(Event hEvent, const char[] sName, bool dontBroadcast)
+{
+	ResetRoundTracking();
+}
+
+// Match end is a stronger boundary than generic round teardown in Scavenge.
+void Event_ScavengeMatchFinished(Event hEvent, const char[] sName, bool dontBroadcast)
+{
+	ResetRoundTracking();
+}
+
+// Keep generic round_end only as a defensive fallback for forced teardown paths.
+void Event_RoundEndFallback(Event hEvent, const char[] sName, bool dontBroadcast)
+{
+	ResetRoundTracking();
+}
+
+void ResetRoundTracking()
 {
 	for (int i = 0; i < MAX_ENTITIES; i++)
 	{
-		if (g_hTimer[i - 1] != null && g_hTimer[i - 1] != INVALID_HANDLE)
+		if (g_hTimer[i] != null && g_hTimer[i] != INVALID_HANDLE)
+		{
 			delete g_hTimer[i];
+			g_hTimer[i] = null;
+		}
+
+		g_bIsOutBound[i] = false;
 	}
 }
 
 public void OnEntityCreated(int entity, const char[] className)
 {
-	if (!IsScavengeMode())
-		return;
-
-	if (!IsValidEntity(entity))
+	if (!IsScavengeMode() || !g_bHasMapConfig)
 		return;
 
 	if (strcmp(className, "weapon_gascan") == 0)
-	{
-	#if !DEBUG
-		SDKHook(entity, SDKHook_VPhysicsUpdatePost, OnVPhysicsUpdatePost);	// track gascans's movement.
-	#else
-		SDKHook(entity, SDKHook_VPhysicsUpdatePost, OnVPhysicsUpdatePost_DEBUG);
-	#endif
-	}
+		RequestFrame(Frame_HookGascanEntity, EntIndexToEntRef(entity));
+}
+
+public void OnEntityDestroyed(int entity)
+{
+	if (entity < 0 || entity >= MAX_ENTITIES)
+		return;
+
+	ResetTrackedEntity(entity);
+}
+
+void Frame_HookGascanEntity(int entityRef)
+{
+	int entity = EntRefToEntIndex(entityRef);
+	if (entity == INVALID_ENT_REFERENCE)
+		return;
+
+	HookGascanEntity(entity);
+}
+
+void HookGascanEntity(int entity)
+{
+	if (!IsTrackedGascan(entity) || g_bIsHooked[entity])
+		return;
+
+	g_bIsHooked[entity] = true;
+
+#if !DEBUG
+	SDKHook(entity, SDKHook_VPhysicsUpdatePost, OnVPhysicsUpdatePost);
+#else
+	SDKHook(entity, SDKHook_VPhysicsUpdatePost, OnVPhysicsUpdatePost_DEBUG);
+#endif
 }
 
 #if !DEBUG
 void OnVPhysicsUpdatePost(int entity)
 {
-	if (!IsValidEntity(entity))
+	if (!g_bHasMapConfig || !IsTrackedGascan(entity))
 		return;
 
 	if (IsReachedLimit() && g_bEnableLimit)
@@ -252,10 +305,26 @@ void OnVPhysicsUpdatePost_DEBUG(int entity)
 
 Action Timer_Ignite(Handle hTimer, int entity)
 {
+	if (entity < 0 || entity >= MAX_ENTITIES)
+	{
+		return Plugin_Stop;
+	}
+
+	if (!g_bHasMapConfig || !IsTrackedGascan(entity))
+	{
+		if (g_hTimer[entity] == hTimer)
+			g_hTimer[entity] = null;
+
+		return Plugin_Stop;
+	}
+
 	if (!g_bIsOutBound[entity])
 		return Plugin_Continue;
-	else
-		Ignite(entity);
+
+	if (g_hTimer[entity] == hTimer)
+		g_hTimer[entity] = null;
+
+	Ignite(entity);
 
 	return Plugin_Stop;
 }
@@ -283,12 +352,15 @@ void Ignite(int entity)
 void ParseMapCoordinateInfo(const char[] sMapName)
 {
 	KeyValues Kv = new KeyValues("");
+	g_bHasMapConfig = false;
 
 	if (!Kv.ImportFromFile(g_sPath))
 		SetFailState("Failed to import from file '%s'!", g_sPath);
 
 	if (Kv.JumpToKey(sMapName))
 	{
+		g_bHasMapConfig = true;
+
 		// directly assign a keyvalue to 0.0 resulting to ignore this boundery since Kv.GetFloat set the defualt value to 0.0.
 		if (FloatCompare(Kv.GetFloat("height_zlimit_min"), 0.0) == 0)
 			g_hCoordinateMap.SetString("z_min", "none");
@@ -327,12 +399,15 @@ void ParseMapCoordinateInfo(const char[] sMapName)
 void ParseMapCoordinateInfo_DEBUG(const char[] sMapName)
 {
 	KeyValues Kv = new KeyValues("");
+	g_bHasMapConfig = false;
 
 	if (!Kv.ImportFromFile(g_sPath))
 		SetFailState("Failed to import from file '%s'!", g_sPath);
 
 	if (!Kv.JumpToKey(sMapName))
 		LogError("Couldn't find map name '%s' in the config file!", sMapName);
+	else
+		g_bHasMapConfig = true;
 
 	PrintToServer("Successfully parsed info.");
 	PrintToServer("--------------- Parsed mapname %s and coordinates. ---------------", sMapName);
@@ -346,6 +421,36 @@ void ParseMapCoordinateInfo_DEBUG(const char[] sMapName)
 bool IsReachedLimit()
 {
 	return (g_iBurnedCount >= g_iBurnLimit);
+}
+
+bool IsTrackedGascan(int entity)
+{
+	if (entity <= MaxClients || entity >= MAX_ENTITIES || !IsValidEntity(entity))
+		return false;
+
+	char sClassname[64];
+	return GetEntityClassname(entity, sClassname, sizeof(sClassname)) && strcmp(sClassname, "weapon_gascan") == 0;
+}
+
+void ResetTrackedEntity(int entity)
+{
+	if (entity < 0 || entity >= MAX_ENTITIES)
+		return;
+
+	if (g_hTimer[entity] != null && g_hTimer[entity] != INVALID_HANDLE)
+		delete g_hTimer[entity];
+
+	g_hTimer[entity] = null;
+	g_bIsOutBound[entity] = false;
+	g_bIsHooked[entity] = false;
+}
+
+void ResetTrackedEntities()
+{
+	for (int i = 0; i < MAX_ENTITIES; i++)
+	{
+		ResetTrackedEntity(i);
+	}
 }
 
 bool IsScavengeMode()
