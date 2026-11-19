@@ -1,9 +1,7 @@
 # Protección de medicinas durante ready-up
 
 Implementación local para el [issue #8](https://github.com/AoC-Gamers/Scavogl-Rework/issues/8).
-**Estado: compilada; pendiente de validación en servidor.** No se ha reproducido
-el fallo ni ejecutado la matriz de aceptación en juego. `competitive_dev` está
-reservado para el trabajo de una extensión y no se modificó.
+**Estado: compilada y pendiente de validación en SRCDS.**
 
 ## Comportamiento
 

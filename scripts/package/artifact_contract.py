@@ -89,6 +89,22 @@ def build_record(root: Path, manifest: dict, compiled: Path) -> dict:
     }
 
 
+def validate_legal_files(root: Path) -> None:
+    license_text = (root / "LICENSE").read_text(encoding="utf-8-sig")
+    markers = (
+        "GNU GENERAL PUBLIC LICENSE",
+        "Version 3, 29 June 2007",
+        "Preamble",
+        "END OF TERMS AND CONDITIONS",
+    )
+    if not all(marker in license_text for marker in markers):
+        raise ValueError("LICENSE must contain the full GPLv3 text")
+
+    notices = (root / "NOTICES.md").read_text(encoding="utf-8-sig")
+    if "https://creativecommons.org/licenses/by-sa/3.0/" not in notices:
+        raise ValueError("NOTICES.md must link to CC BY-SA 3.0 for the mode configuration")
+
+
 def product_sources(root: Path, manifest: dict) -> set[Path]:
     plugins = plugin_paths(manifest)
     paths = []
@@ -120,6 +136,7 @@ def product_sources(root: Path, manifest: dict) -> set[Path]:
     unique_paths([*product, *plugins])
     for path in sorted(product):
         require_file(root, path)
+    validate_legal_files(root)
 
     external_exec = set(manifest["external_exec"])
     external_stripper = set(manifest.get("external_stripper", []))

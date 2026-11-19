@@ -72,6 +72,9 @@ el cambio de modo y la restauración de cvars. La validación offline cubre
 el contenido del paquete. Los pendientes para una publicación se registran
 en `NOTICES.md`.
 
+El validador comprueba el texto de la licencia GNU y el enlace CC BY-SA 3.0
+en `NOTICES.md` antes de empaquetar.
+
 ## GitHub Actions
 
 El [workflow de compilación](../../.github/workflows/sourcemod-build.yml)
