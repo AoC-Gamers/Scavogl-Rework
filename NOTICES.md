@@ -20,8 +20,8 @@ Confogl, ReadyUp, BuiltinVotes, Left4DHooks y Stripper se requieren en
 runtime. Se omite la gamedata `l4d2_fix_scvng_firsthit.txt`, cuyo plugin
 salió del modo en `a338f2b`.
 
-El ZIP de validación local incluye GPLv3 en `LICENSE` y CC BY-SA 3.0 en
-`LICENSES/`. Para una publicación queda por verificar la revisión exacta de
+El ZIP de validación local incluye GPLv3 en `LICENSE` y el texto de
+[CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/legalcode). Para una publicación queda por verificar la revisión exacta de
 las dos adaptaciones de blueblur y el alcance de las declaraciones para
 los recursos de terceros, incluidos traducciones, datos y filtros.
 

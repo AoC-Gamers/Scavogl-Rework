@@ -116,10 +116,7 @@ def product_sources(root: Path, manifest: dict) -> set[Path]:
         if not any(resource.is_relative_to(directory) and resource.suffix in suffixes
                    for directory, suffixes in resource_roots.items()):
             raise ValueError(f"Unsupported runtime resource: {resource}")
-    legal = [relative_path(name) for name in manifest["license_files"]]
-    if any(not path.is_relative_to("LICENSES") or path.suffix != ".txt" for path in legal):
-        raise ValueError("Additional license texts must live in LICENSES/")
-    product = unique_paths([*paths, *resources, *sorted(set(plugins.values())), *PROJECT_FILES, *legal])
+    product = unique_paths([*paths, *resources, *sorted(set(plugins.values())), *PROJECT_FILES])
     unique_paths([*product, *plugins])
     for path in sorted(product):
         require_file(root, path)

@@ -67,8 +67,5 @@
     "confogl_personalize.cfg",
     "confogl_rates.cfg",
     "cvar_tracking.cfg"
-  ],
-  "license_files": [
-    "LICENSES/CC-BY-SA-3.0.txt"
   ]
 }
