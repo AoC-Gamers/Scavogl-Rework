@@ -8,7 +8,7 @@ Scavogl Rework es una configuración competitiva para Left 4 Dead 2, diseñada p
 
 ### General
 - Basado en ZoneMod y otras configuraciones competitivas.
-- Plugin de protección de píldoras y adrenalina durante ready-up de Scavenge, pendiente de validación en servidor.
+- Bloqueo de recogida de píldoras y adrenalina durante ready-up de Scavenge, comprobado en un servidor local.
 
 ### Scavogl 2v2 y 1v1
 - Incrementa el tiempo de bonificación por puntuación en Scavenge de 20 a 25 segundos.

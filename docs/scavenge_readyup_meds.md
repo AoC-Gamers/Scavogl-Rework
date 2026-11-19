@@ -1,7 +1,8 @@
 # Protección de medicinas durante ready-up
 
 Implementación local para el [issue #8](https://github.com/AoC-Gamers/Scavogl-Rework/issues/8).
-**Estado: compilada y pendiente de validación en SRCDS.**
+
+El bloqueo de recogida durante ready-up se comprobó en un servidor local.
 
 ## Comportamiento
 
@@ -42,7 +43,7 @@ No se añaden configs Hunters independientes.
 
 No genera un archivo de configuración automático ni mensajes de chat. Al
 descargar el plugin se retiran los hooks; no se restauran las ConVars.
-La salida normal del modo usa `pred_unload_plugins`.
+La salida normal del modo usa `pm_unload_plugins refresh`.
 
 El diagnóstico indica cliente, bot, entidad y classname,
 sin limitar la frecuencia. Solo se ejecuta
@@ -65,7 +66,11 @@ compilación exitosa con una advertencia de deprecación en su `halflife.inc`
 (`CreateDialog`), externo a este cambio. El binario entregado usa el SDK indicado
 arriba, sin esa advertencia.
 
-## Validación pendiente
+## Cobertura de la prueba en servidor
+
+La prueba local confirmó el bloqueo de recogida durante ready-up. Queda
+pendiente documentar qué tipos de entidad se probaron y verificar los casos
+de transición y conservación del stock.
 
 Registrar las versiones realmente instaladas de SourceMod, SDKHooks,
 Left4DHooks, ReadyUp y `starting_items` antes de probar. El diagnóstico estático

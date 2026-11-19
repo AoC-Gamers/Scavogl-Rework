@@ -6,7 +6,7 @@
 
 - `scavenge_readyup_meds` bloquea la recogida de píldoras y adrenalina
   durante ReadyUp. La entrega de píldoras al iniciar la ronda conserva su
-  configuración. Queda pendiente la prueba en SRCDS.
+  configuración. El bloqueo de recogida se comprobó en un servidor local.
 
 ### Cambiado
 
