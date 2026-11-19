@@ -1,4 +1,4 @@
-# Scavogl Rework v2.3.4
+# Scavogl Rework v2.4.0
 
 [EN] [translation](https://translate.google.com/translate?sl=es&tl=en&u=https://github.com/AoC-Gamers/scavogl_rework)
 

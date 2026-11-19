@@ -1,6 +1,12 @@
 # Changelog
 
-## [Unreleased]
+## [2.4.0] - 2026-11-19
+
+### Añadido
+
+- `scavenge_readyup_meds` bloquea la recogida de píldoras y adrenalina
+  durante ReadyUp. La entrega de píldoras al iniciar la ronda conserva su
+  configuración. Queda pendiente la prueba en SRCDS.
 
 ### Cambiado
 
@@ -14,9 +20,9 @@
 - Los perfiles reducidos usan sus límites generales de comunes y prescinden
   de la carga del complemento de Cvars por mapa.
 - Los cuatro perfiles de ScavOgl usan Plugin Manager al salir del modo.
-- Durante el ready-up de Scavenge, los supervivientes ya no pueden recoger
-  píldoras ni adrenalina mediante las rutas cubiertas por SDKHooks. La entrega
-  de píldoras al iniciar la ronda conserva su configuración.
+- Los plugins gestionan la limpieza de bidones y el cierre de ronda mediante
+  eventos de Scavenge. El reinicio tras finalizar la serie cancela cualquier
+  temporizador anterior.
 
 ### Desarrollo
 

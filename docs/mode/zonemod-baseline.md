@@ -5,7 +5,7 @@
 | Base | [SirPlease/L4D2-Competitive-Rework](https://github.com/SirPlease/L4D2-Competitive-Rework) |
 | Versión comparada | ZoneMod **v2.9.2b** |
 | Revisión comparada | [`0390482d48ee87ba16ecb39490dc6f235dbdc1e0`](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/0390482d48ee87ba16ecb39490dc6f235dbdc1e0/cfg/cfgogl) |
-| Modo de destino | ScavOgl Rework **v2.3.4**, sobre Scavenge |
+| Modo de destino | ScavOgl Rework **v2.4.0**, sobre Scavenge |
 
 Los perfiles se compararon por tamaño. Las variantes reducidas heredan los CFG compartidos de su modo principal.
 
