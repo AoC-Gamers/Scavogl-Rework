@@ -56,17 +56,11 @@ Desactivar el diagnóstico al terminar.
 ## Compilación local
 
 SourcePawn Compiler **1.12.0.7255**, includes SDK de esa distribución e includes
-del repositorio: **sin errores ni advertencias**. El repositorio no dispone de
-Makefile; se compiló directamente el entrypoint:
+del repositorio: **sin errores ni advertencias** en la validación inicial.
+El [Makefile](../Makefile) compila ahora el entrypoint como parte de
+`make build-smx`. El ZIP coloca el binario generado en
+`addons/sourcemod/plugins/optional/`.
 
-```bash
-# Desde la raíz del repositorio; SM_SCRIPTING apunta al SDK Linux de SourceMod.
-"$SM_SCRIPTING/spcomp" addons/sourcemod/scripting/scavenge_readyup_meds.sp \
-  -iaddons/sourcemod/scripting/include -i"$SM_SCRIPTING/include" \
-  -oaddons/sourcemod/plugins/optional/scavenge_readyup_meds.smx
-```
-
-El binario versionable se incluye en `plugins/optional`, siguiendo el repositorio.
 También se compiló con los includes del checkout base
 `L4D2-Competitive-Rework` (`0390482d48ee87ba16ecb39490dc6f235dbdc1e0`):
 compilación exitosa con una advertencia de deprecación en su `halflife.inc`

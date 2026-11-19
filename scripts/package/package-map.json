@@ -1,0 +1,74 @@
+{
+  "build": {
+    "plugins": {
+      "optional": [
+        "l4d2_scav_gascan_selfburn",
+        "scavenge_gamemode",
+        "scavenge_no_starting_items",
+        "scavenge_quick_end",
+        "scavenge_readyup_meds",
+        "scavenge_rounds"
+      ]
+    }
+  },
+  "selectable_modes": [
+    "scavogl",
+    "scav1v1",
+    "scav2v2",
+    "scav3v3"
+  ],
+  "modes": {
+    "scav1v1": [
+      "confogl.cfg",
+      "confogl_off.cfg",
+      "confogl_plugins.cfg",
+      "scav1v1.cfg"
+    ],
+    "scav2v2": [
+      "confogl.cfg",
+      "confogl_off.cfg",
+      "confogl_plugins.cfg",
+      "scav2v2.cfg"
+    ],
+    "scav3v3": [
+      "confogl.cfg",
+      "confogl_off.cfg",
+      "confogl_plugins.cfg",
+      "scav3v3.cfg"
+    ],
+    "scavogl": [
+      "confogl.cfg",
+      "confogl_off.cfg",
+      "confogl_plugins.cfg",
+      "scavogl.cfg",
+      "shared_cvars.cfg",
+      "shared_plugins.cfg",
+      "shared_settings.cfg"
+    ]
+  },
+  "resources": [
+    "addons/sourcemod/data/l4d2_scav_gascan_selfburn.cfg",
+    "addons/sourcemod/gamedata/scavenge_no_starting_items.txt",
+    "addons/sourcemod/translations/chi/l4d2_scav_gascan_selfburn.phrases.txt",
+    "addons/sourcemod/translations/chi/scavenge_gamemode.phrases.txt",
+    "addons/sourcemod/translations/chi/scavenge_quick_end.phrases.txt",
+    "addons/sourcemod/translations/chi/scavenge_rounds.phrases.txt",
+    "addons/sourcemod/translations/es/l4d2_scav_gascan_selfburn.phrases.txt",
+    "addons/sourcemod/translations/es/scavenge_gamemode.phrases.txt",
+    "addons/sourcemod/translations/es/scavenge_quick_end.phrases.txt",
+    "addons/sourcemod/translations/es/scavenge_rounds.phrases.txt",
+    "addons/sourcemod/translations/l4d2_scav_gascan_selfburn.phrases.txt",
+    "addons/sourcemod/translations/scavenge_gamemode.phrases.txt",
+    "addons/sourcemod/translations/scavenge_quick_end.phrases.txt",
+    "addons/sourcemod/translations/scavenge_rounds.phrases.txt",
+    "cfg/stripper/scavogl/global_filters.cfg"
+  ],
+  "external_exec": [
+    "confogl_personalize.cfg",
+    "confogl_rates.cfg",
+    "cvar_tracking.cfg"
+  ],
+  "license_files": [
+    "LICENSES/CC-BY-SA-3.0.txt"
+  ]
+}

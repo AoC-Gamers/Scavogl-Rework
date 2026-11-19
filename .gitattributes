@@ -1,2 +1,36 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Let Git distinguish text from binary data. Text uses LF unless overridden.
+* text=auto eol=lf
+
+# Windows command scripts
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Compiled code and archives
+*.smx binary -eol
+*.so binary -eol
+*.dll binary -eol
+*.exe binary -eol
+*.a binary -eol
+*.lib binary -eol
+*.zip binary -eol
+*.7z binary -eol
+*.tar binary -eol
+*.gz binary -eol
+*.tgz binary -eol
+*.bz2 binary -eol
+
+# Images, audio and Source engine assets
+*.png binary -eol
+*.jpg binary -eol
+*.jpeg binary -eol
+*.gif binary -eol
+*.ico binary -eol
+*.pdf binary -eol
+*.wav binary -eol
+*.mp3 binary -eol
+*.vtf binary -eol
+*.mdl binary -eol
+*.vtx binary -eol
+*.vvd binary -eol
+*.phy binary -eol
+*.bsp binary -eol

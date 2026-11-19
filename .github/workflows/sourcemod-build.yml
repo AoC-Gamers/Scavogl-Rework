@@ -1,0 +1,122 @@
+name: Build game mode
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SOURCEMOD_VERSION: ${{ vars.SOURCEMOD_VERSION }}
+  RELEASE_BASENAME: scavogl-rework-${{ github.sha }}
+
+jobs:
+  deps-smx:
+    runs-on: ubuntu-latest
+    outputs:
+      sdk-cache-key: ${{ steps.sdk.outputs.key }}
+
+    steps:
+      - name: Validate SourceMod version
+        shell: bash
+        run: |
+          if [[ ! "$SOURCEMOD_VERSION" =~ ^[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Set the Actions variable SOURCEMOD_VERSION to a SourceMod branch such as 1.12."
+            exit 1
+          fi
+
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Resolve SourceMod SDK cache key
+        id: sdk
+        shell: bash
+        env:
+          FETCH_HASH: ${{ hashFiles('scripts/deps/fetch-sourcemod.py', 'Makefile') }}
+        run: |
+          printf 'key=smx-sdk-%s-%s-%s-%s\n' "$RUNNER_OS" "$RUNNER_ARCH" "$SOURCEMOD_VERSION" "$FETCH_HASH" >> "$GITHUB_OUTPUT"
+
+      - name: Restore SourceMod SDK
+        id: sdk-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: .deps/smx/sourcemod-linux
+          key: ${{ steps.sdk.outputs.key }}
+
+      - name: Fetch the SourceMod SDK
+        if: steps.sdk-cache.outputs.cache-hit != 'true'
+        run: make deps-smx
+
+      - name: Save SourceMod SDK
+        if: steps.sdk-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: .deps/smx/sourcemod-linux
+          key: ${{ steps.sdk.outputs.key }}
+
+  build-smx:
+    needs: deps-smx
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Restore prepared SourceMod SDK
+        uses: actions/cache/restore@v5
+        with:
+          path: .deps/smx/sourcemod-linux
+          key: ${{ needs.deps-smx.outputs.sdk-cache-key }}
+          fail-on-cache-miss: true
+
+      - name: Compile plugins
+        run: make build-smx SPCOMP=.deps/smx/sourcemod-linux/addons/sourcemod/scripting/spcomp64
+
+      - name: Upload compiled plugin tree
+        uses: actions/upload-artifact@v6
+        with:
+          name: smx-build-${{ github.sha }}
+          path: .build/smx/
+          include-hidden-files: true
+          if-no-files-found: error
+          overwrite: true
+
+  package:
+    needs: build-smx
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Download compiled plugin tree
+        uses: actions/download-artifact@v8
+        with:
+          name: smx-build-${{ github.sha }}
+          path: .build/smx
+
+      - name: Build and validate the game mode ZIP
+        run: |
+          make validate-modes
+          make release
+          make validate-artifact
+
+      - name: Upload validated ZIP
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ env.RELEASE_BASENAME }}
+          path: dist/release/${{ env.RELEASE_BASENAME }}.zip
+          if-no-files-found: error
+          overwrite: true

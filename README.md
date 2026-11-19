@@ -19,10 +19,12 @@ Scavogl Rework es una configuración competitiva para Left 4 Dead 2, diseñada p
 
 ## Instalación
 1. Scavogl Rework requiere el proyecto base [L4D2-Competitive-Rework](https://github.com/SirPlease/L4D2-Competitive-Rework). Descárgalo e instálalo primero.
-2. Descarga los archivos desde el [repositorio de GitHub](https://github.com/AoC-Gamers/scavogl_rework).
-3. Extrae los archivos en la carpeta principal de tu servidor.
-4. Configura los archivos según tus necesidades (ver [Configuración](wiki/Configuración.md)).
-5. Reinicia el servidor para aplicar los cambios.
+2. Con GNU Make y Python 3.10 o posterior, genera el ZIP local con `make deps-smx`, `make build-smx` y `make release`.
+3. Copia las rutas `cfg/` y `addons/sourcemod/` declaradas dentro del ZIP a `left4dead2/` en el servidor.
+4. Verifica los proveedores indicados en [NOTICES.md](NOTICES.md) y registra el modo como se muestra abajo.
+
+Source Scramble viene con la base de L4D2-Competitive-Rework. Scavogl
+usa esa instalación para `scavenge_no_starting_items`.
 
 ## Configuración
 
@@ -58,8 +60,11 @@ Luego, reinicia el servidor para aplicar los cambios.
 ## Contribuciones
 Gracias por tu interés en contribuir a *Scavogl Rework*, Puedes reportar problemas o sugerir mejoras a través de la [página de issues](https://github.com/AoC-Gamers/scavogl_rework/issues) o enviando un *pull request* en el [repositorio de GitHub](https://github.com/AoC-Gamers/scavogl_rework/pulls).
 
-## Licencia
-*Scavogl Rework* está licenciado bajo la licencia **CC-BY-SA 3.0**. Para más información, consulta el [texto completo de la licencia](http://creativecommons.org/licenses/by-sa/3.0/legalcode).
+## Licencias y autoría
+
+Las configuraciones de Confogl declaran CC BY-SA 3.0. Consulta
+[NOTICES.md](NOTICES.md) para la procedencia, licencias de los plugins
+y componentes pendientes de confirmar.
 
 # Copyright
 *Scavogl Rework* es es una adaptación de "ScavOgl".
