@@ -9,6 +9,10 @@
 
 ### Corregido
 
+- Stripper aplica los ajustes de recogida de armas cuerpo a cuerpo, objetos
+  genéricos y píldoras por clase de entidad, como en ZoneMod.
+- Los perfiles reducidos usan sus límites generales de comunes y prescinden
+  de la carga del complemento de Cvars por mapa.
 - Los cuatro perfiles de ScavOgl usan Plugin Manager al salir del modo.
 - Durante el ready-up de Scavenge, los supervivientes ya no pueden recoger
   píldoras ni adrenalina mediante las rutas cubiertas por SDKHooks. La entrega

@@ -32,13 +32,16 @@ Los cuatro perfiles pasan por el [CFG compartido de apagado](../../cfg/cfgogl/sc
 | Medicina | [`scavenge_no_starting_items`](../../addons/sourcemod/scripting/scavenge_no_starting_items.sp) retira kits y píldoras iniciales mediante Source Scramble de la base. [`scavenge_readyup_meds`](../scavenge_readyup_meds.md) bloquea recoger píldoras y adrenalina durante ready-up. |
 | Jefes | Los cuatro perfiles fijan `sm_tank_can_spawn 0` y `sm_witch_can_spawn 0`. La [carga compartida](../../cfg/cfgogl/scavogl/shared_plugins.cfg) omite los plugins de jefes, sus votaciones y sus reglas por mapa de ZoneMod. |
 
+## Límites de comunes
+
+ScavOgl usa los límites generales de `z_common_limit` del `confogl.cfg` de cada perfil. En orden de 4v4 a 1v1 son 30, 18, 10 y 5. ScavOgl prescinde de `mapcvars.txt` y de la carga de `l4d_mapbased_cvars`. ZoneMod aplica ajustes por mapa en sus formatos reducidos.
+
 ## Diferencias pendientes de revisión
 
 | Área | Configuración vigente y punto pendiente |
 | --- | --- |
-| Mapas y límites locales | ScavOgl carece de `mapinfo.txt` y fija `confogl_itemtracking_mapspecific 0`. Los tres perfiles reducidos cargan `l4d_mapbased_cvars` y apuntan a sus propios directorios, que carecen de `mapcvars.txt`. ZoneMod aplica límites de comunes en seis mapas por perfil reducido. Queda por decidir si ScavOgl necesita ajustes propios por mapa. |
-| Stripper | ScavOgl usa su [filtro global](../../cfg/stripper/scavogl/global_filters.cfg). Difiere del de ZoneMod en el script de skins y en filtros de armas, puertas, botiquines y objetos físicos, entre otros. ZoneMod también usa filtros por mapa. Queda por revisar cada cambio según su efecto en Scavenge. |
+| Datos de mapas | ScavOgl carece de `mapinfo.txt` y fija `confogl_itemtracking_mapspecific 0`. Queda por revisar si algún dato de mapa de ZoneMod es aplicable a Scavenge. |
+| Stripper | Los 17 selectores de recogida del [filtro global](../../cfg/stripper/scavogl/global_filters.cfg) ya coinciden con ZoneMod y usan `classname`. Queda por revisar el resto de las diferencias en filtros globales y por mapa según su efecto en Scavenge. |
 | Armas, objetos y balance | Los [ajustes compartidos](../../cfg/cfgogl/scavogl/shared_settings.cfg) conservan conversiones y atributos de armas distintos, `pill_passer`, `steady_boost` para infectados, godframes del Hunter de `1.8`, flags de infectados poco comunes de `55` y perdigón central en `0`. También difieren las reglas de retirada de objetos y los ajustes de aparición de píldoras. |
-| ReadyUp y descarga | El CFG de apagado sigue escribiendo `l4d_ready_scavenge_restart 1`. La Cvar no aparece en el ReadyUp de la revisión comparada. Queda por confirmar qué proveedor la implementa y qué efecto tiene al cambiar de modo. |
 
 La aceptación en SRCDS queda pendiente. Debe cubrir la carga, el ready-up, el cambio de lado, el fin de serie y la descarga, incluida la restauración de los objetos iniciales al cambiar de modo. [Guía de compilación y distribución](../build/README.md).

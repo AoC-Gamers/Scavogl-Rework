@@ -42,7 +42,7 @@ compilación queda en `.build/smx/`.
 ## Dependencias y verificación
 
 En la copia revisada de L4D2-Competitive-Rework (`0390482d`) se encontraron
-los 96 plugins externos referenciados por las configuraciones de carga.
+los 95 plugins externos referenciados por las configuraciones de carga.
 `cvar_tracking.cfg` está en esa base. `confogl_rates.cfg` y
 `confogl_personalize.cfg` se deben verificar en el perfil del servidor.
 
