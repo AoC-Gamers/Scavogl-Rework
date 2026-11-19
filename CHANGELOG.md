@@ -9,6 +9,7 @@
 
 ### Corregido
 
+- Los cuatro perfiles de ScavOgl usan Plugin Manager al salir del modo.
 - Durante el ready-up de Scavenge, los supervivientes ya no pueden recoger
   píldoras ni adrenalina mediante las rutas cubiertas por SDKHooks. La entrega
   de píldoras al iniciar la ronda conserva su configuración.
