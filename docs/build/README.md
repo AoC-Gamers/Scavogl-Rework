@@ -45,6 +45,7 @@ En la copia revisada de L4D2-Competitive-Rework (`0390482d`) se encontraron
 los 95 plugins externos referenciados por las configuraciones de carga.
 `cvar_tracking.cfg` está en esa base. `confogl_rates.cfg` y
 `confogl_personalize.cfg` se deben verificar en el perfil del servidor.
+La base aporta `fix_pill_pass.smx`, su gamedata y la extensión SourceScramble.
 
 Verifica BuiltinVotes y Left4DHooks, incluida la gamedata
 `left4dhooks.l4d2.txt`. La gamedata histórica `l4d2_fix_scvng_firsthit.txt`

@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.4.1] - 2026-11-19
+
+### Cambiado
+
+- ScavOgl usa `fix_pill_pass` con pase por recarga, como ZoneMod.
+
 ## [2.4.0] - 2026-11-19
 
 ### Añadido

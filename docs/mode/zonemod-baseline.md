@@ -5,7 +5,7 @@
 | Base | [SirPlease/L4D2-Competitive-Rework](https://github.com/SirPlease/L4D2-Competitive-Rework) |
 | Versión comparada | ZoneMod **v2.9.2b** |
 | Revisión comparada | [`0390482d48ee87ba16ecb39490dc6f235dbdc1e0`](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/0390482d48ee87ba16ecb39490dc6f235dbdc1e0/cfg/cfgogl) |
-| Modo de destino | ScavOgl Rework **v2.4.0**, sobre Scavenge |
+| Modo de destino | ScavOgl Rework **v2.4.1**, sobre Scavenge |
 
 Los perfiles se compararon por tamaño. Las variantes reducidas heredan los CFG compartidos de su modo principal.
 
@@ -36,12 +36,22 @@ Los cuatro perfiles pasan por el [CFG compartido de apagado](../../cfg/cfgogl/sc
 
 ScavOgl usa los límites generales de `z_common_limit` del `confogl.cfg` de cada perfil. En orden de 4v4 a 1v1 son 30, 18, 10 y 5. ScavOgl prescinde de `mapcvars.txt` y de la carga de `l4d_mapbased_cvars`. ZoneMod aplica ajustes por mapa en sus formatos reducidos.
 
+## Pase de píldoras y adrenalina
+
+ScavOgl usa `fix_pill_pass` de la base con `fix_pill_pass_reload 1`,
+como ZoneMod. El ajuste habilita el pase por recarga. [Carga compartida](../../cfg/cfgogl/scavogl/shared_plugins.cfg) ·
+[Ajustes compartidos](../../cfg/cfgogl/scavogl/shared_settings.cfg).
+
+El bloqueo de recogida durante ReadyUp y el pase entre supervivientes
+usan rutas distintas. Queda por comprobar el pase durante ReadyUp en
+Scavenge.
+
 ## Diferencias pendientes de revisión
 
 | Área | Configuración vigente y punto pendiente |
 | --- | --- |
 | Datos de mapas | ScavOgl carece de `mapinfo.txt` y fija `confogl_itemtracking_mapspecific 0`. Queda por revisar si algún dato de mapa de ZoneMod es aplicable a Scavenge. |
 | Stripper | Los 17 selectores de recogida del [filtro global](../../cfg/stripper/scavogl/global_filters.cfg) ya coinciden con ZoneMod y usan `classname`. Queda por revisar el resto de las diferencias en filtros globales y por mapa según su efecto en Scavenge. |
-| Armas, objetos y balance | Los [ajustes compartidos](../../cfg/cfgogl/scavogl/shared_settings.cfg) conservan conversiones y atributos de armas distintos, `pill_passer`, `steady_boost` para infectados, godframes del Hunter de `1.8`, flags de infectados poco comunes de `55` y perdigón central en `0`. También difieren las reglas de retirada de objetos y los ajustes de aparición de píldoras. |
+| Armas, objetos y balance | Los [ajustes compartidos](../../cfg/cfgogl/scavogl/shared_settings.cfg) conservan conversiones y atributos de armas distintos, `steady_boost` para infectados, godframes del Hunter de `1.8`, flags de infectados poco comunes de `55` y perdigón central en `0`. También difieren las reglas de retirada de objetos y los ajustes de aparición de píldoras. |
 
 El bloqueo de recogida durante ready-up se comprobó en un servidor local. La aceptación del modo en SRCDS todavía debe cubrir la carga, las transiciones de ready-up, el cambio de lado, el fin de serie y la descarga, incluida la restauración de los objetos iniciales. [Prueba de recogida](../scavenge_readyup_meds.md) · [Guía de compilación y distribución](../build/README.md).
