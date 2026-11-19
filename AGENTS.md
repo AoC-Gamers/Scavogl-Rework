@@ -9,8 +9,7 @@ Consulta [el índice de documentación](docs/README.md) y
   `scripts/package/package-map.json` declara los entrypoints. Genera y valida el ZIP con
   `make release` y `make validate-artifact`. Las salidas quedan en
   `.deps/`, `.build/` y `dist/`.
-- Conserva autoría y licencias. Distingue compilación, validación offline y
-  prueba en SRCDS. Los cambios remotos y el despliegue requieren autorización.
+- Conserva autoría y licencias. Los cambios remotos y el despliegue requieren autorización.
 
 ## Actualizar la base de ZoneMod
 
@@ -27,7 +26,6 @@ Consulta [el índice de documentación](docs/README.md) y
 3. Ejecuta `make validate-modes`, `make release` y `make validate-artifact`.
    Si falta una compilación válida o cambian fuentes o includes, sigue la
    guía de compilación y ejecuta `make build-smx` antes de empaquetar.
-   Registra por separado la prueba en SRCDS de carga, ready-up, cambio de
-   lado, fin de serie y descarga. Actualiza la revisión y el alcance de la
+   Actualiza la revisión y el alcance de la
    sincronización en la referencia técnica y anota los cambios de
    comportamiento en el changelog.

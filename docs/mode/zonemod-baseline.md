@@ -43,8 +43,7 @@ como ZoneMod. El ajuste habilita el pase por recarga. [Carga compartida](../../c
 [Ajustes compartidos](../../cfg/cfgogl/scavogl/shared_settings.cfg).
 
 El bloqueo de recogida durante ReadyUp y el pase entre supervivientes
-usan rutas distintas. Queda por comprobar el pase durante ReadyUp en
-Scavenge.
+usan rutas distintas.
 
 ## Diferencias pendientes de revisión
 
@@ -54,4 +53,4 @@ Scavenge.
 | Stripper | Los 17 selectores de recogida del [filtro global](../../cfg/stripper/scavogl/global_filters.cfg) ya coinciden con ZoneMod y usan `classname`. Queda por revisar el resto de las diferencias en filtros globales y por mapa según su efecto en Scavenge. |
 | Armas, objetos y balance | Los [ajustes compartidos](../../cfg/cfgogl/scavogl/shared_settings.cfg) conservan conversiones y atributos de armas distintos, `steady_boost` para infectados, godframes del Hunter de `1.8`, flags de infectados poco comunes de `55` y perdigón central en `0`. También difieren las reglas de retirada de objetos y los ajustes de aparición de píldoras. |
 
-El bloqueo de recogida durante ready-up se comprobó en un servidor local. La aceptación del modo en SRCDS todavía debe cubrir la carga, las transiciones de ready-up, el cambio de lado, el fin de serie y la descarga, incluida la restauración de los objetos iniciales. [Prueba de recogida](../scavenge_readyup_meds.md) · [Guía de compilación y distribución](../build/README.md).
+El bloqueo de recogida durante ready-up se comprobó en un servidor local. [Prueba de recogida](../scavenge_readyup_meds.md) · [Guía de compilación y distribución](../build/README.md).

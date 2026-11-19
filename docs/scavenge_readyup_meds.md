@@ -26,8 +26,7 @@ Reutiliza `L4D_GetClientTeam` y `L4D2_GetWeaponId` de
 nombres en `OnPluginStart` para evitar su creación en el callback de recogida.
 La identificación desde la entidad reconoce también los nombres con sufijo
 `_spawn` y el ID de `weapon_spawn`. Si esas entidades llegan al hook con un ID
-de píldoras o adrenalina, se aplica la misma condición de bloqueo; su ruta de
-recogida y la conservación del stock siguen pendientes de pruebas en juego.
+de píldoras o adrenalina, se aplica la misma condición de bloqueo.
 
 La carga en `cfg/cfgogl/scavogl/shared_plugins.cfg` cubre las cuatro configs
 versionadas: `scavogl`, `scav3v3`, `scav2v2` y `scav1v1`. Las variantes Hunters
@@ -65,30 +64,3 @@ También se compiló con los includes del checkout base
 compilación exitosa con una advertencia de deprecación en su `halflife.inc`
 (`CreateDialog`), externo a este cambio. El binario entregado usa el SDK indicado
 arriba, sin esa advertencia.
-
-## Cobertura de la prueba en servidor
-
-La prueba local confirmó el bloqueo de recogida durante ready-up. Queda
-pendiente documentar qué tipos de entidad se probaron y verificar los casos
-de transición y conservación del stock.
-
-Registrar las versiones realmente instaladas de SourceMod, SDKHooks,
-Left4DHooks, ReadyUp y `starting_items` antes de probar. El diagnóstico estático
-se basó en `starting_items` 2.2.1 del checkout base: da píldoras al pasar a live
-solo si el slot médico está vacío; ReadyUp pone `inReadyUp = false` antes de
-emitir `OnRoundIsLive`.
-
-Ejecutar en Dark Carnival Motel (`c2m1_highway`) y The Passing Port
-(`c6m3_port`), primero sin protección y después con ella:
-
-- T01–T04: píldoras, adrenalina, objetos caídos y spawns multiuso. Comprobar
-  callbacks, inventario, entidad y stock antes/después; incorporar otra ruta
-  de bloqueo únicamente si las pruebas la justifican.
-- T05–T09: cuenta atrás, cancelación, entrega inicial al pasar a live y recogida,
-  uso, paso y drop posteriores. Comparar el total de medicinas entre ambos casos.
-- T10–T15: bots, otros equipos, recarga con clientes, ConVar deshabilitada,
-  salida del modo, ReadyUp ausente/retirado, cambio de mapa y siguiente mitad.
-- T16–T18: mapas sin medicinas, tamaños 1v1–4v4 y Hunters, latencia y spam de uso.
-
-La compilación y el mensaje de diagnóstico no prueban la conservación del recurso.
-No dar por resuelto el issue hasta verificar estos resultados en juego.

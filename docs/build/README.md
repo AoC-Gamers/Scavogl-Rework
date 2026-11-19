@@ -64,14 +64,8 @@ El ZIP de Scavogl contiene el plugin y su gamedata. El include se usa en
 la compilación y la extensión se instala con la base. Scavogl administra
 su parche directamente y puede funcionar sin `sourcescramble_manager.smx`.
 
-En SRCDS, verifica que la extensión de la base aparezca en `sm exts list`.
-Carga Scavogl y confirma la retirada de los objetos iniciales. Después
-cambia de modo y comprueba que el comportamiento inicial se haya restaurado.
-
-La aceptación en SRCDS requiere comprobar la activación, el inicio de ronda,
-el cambio de modo y la restauración de cvars. La validación offline cubre
-el contenido del paquete. Los pendientes para una publicación se registran
-en `NOTICES.md`.
+La validación offline cubre el contenido del paquete. Los pendientes para
+una publicación se registran en `NOTICES.md`.
 
 El validador comprueba el texto de la licencia GNU y el enlace CC BY-SA 3.0
 en `NOTICES.md` antes de empaquetar.
