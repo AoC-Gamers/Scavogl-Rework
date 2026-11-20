@@ -4,8 +4,8 @@
 | --- | --- |
 | Base | [SirPlease/L4D2-Competitive-Rework](https://github.com/SirPlease/L4D2-Competitive-Rework) |
 | Versión comparada | ZoneMod **v2.9.2b** |
-| Revisión comparada | [`0390482d48ee87ba16ecb39490dc6f235dbdc1e0`](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/0390482d48ee87ba16ecb39490dc6f235dbdc1e0/cfg/cfgogl) |
-| Modo de destino | ScavOgl Rework **v2.4.1**, sobre Scavenge |
+| Revisión comparada | [`85139a242fafc913add3862c7066880b0ed9b991`](https://github.com/SirPlease/L4D2-Competitive-Rework/tree/85139a242fafc913add3862c7066880b0ed9b991/cfg/cfgogl) |
+| Modo de destino | ScavOgl Rework **v2.4.2**, sobre Scavenge |
 
 Los perfiles se compararon por tamaño. Las variantes reducidas heredan los CFG compartidos de su modo principal.
 
@@ -15,6 +15,10 @@ Los perfiles se compararon por tamaño. Las variantes reducidas heredan los CFG 
 | 3v3 | [`scav3v3`](../../cfg/cfgogl/scav3v3/confogl.cfg) | `zm3v3` | 20 s |
 | 2v2 | [`scav2v2`](../../cfg/cfgogl/scav2v2/confogl.cfg) | `zm2v2` | 25 s |
 | 1v1 | [`scav1v1`](../../cfg/cfgogl/scav1v1/confogl.cfg) | `zm1v1` | 25 s |
+
+## Cambios de la base en `85139a24`
+
+Se retiraron `l4d2_steady_boost` y sus ajustes de Confogl. [Retirada en la base](https://github.com/SirPlease/L4D2-Competitive-Rework/commit/7d080dac).
 
 ## Apagado sincronizado
 
@@ -51,6 +55,6 @@ usan rutas distintas.
 | --- | --- |
 | Datos de mapas | ScavOgl carece de `mapinfo.txt` y fija `confogl_itemtracking_mapspecific 0`. Queda por revisar si algún dato de mapa de ZoneMod es aplicable a Scavenge. |
 | Stripper | Los 17 selectores de recogida del [filtro global](../../cfg/stripper/scavogl/global_filters.cfg) ya coinciden con ZoneMod y usan `classname`. Queda por revisar el resto de las diferencias en filtros globales y por mapa según su efecto en Scavenge. |
-| Armas, objetos y balance | Los [ajustes compartidos](../../cfg/cfgogl/scavogl/shared_settings.cfg) conservan conversiones y atributos de armas distintos, `steady_boost` para infectados, godframes del Hunter de `1.8`, flags de infectados poco comunes de `55` y perdigón central en `0`. También difieren las reglas de retirada de objetos y los ajustes de aparición de píldoras. |
+| Armas, objetos y balance | Los [ajustes compartidos](../../cfg/cfgogl/scavogl/shared_settings.cfg) conservan conversiones y atributos de armas distintos, godframes del Hunter de `1.8`, flags de infectados poco comunes de `55` y perdigón central en `0`. También difieren las reglas de retirada de objetos y los ajustes de aparición de píldoras. |
 
 El bloqueo de recogida durante ready-up se comprobó en un servidor local. [Prueba de recogida](../scavenge_readyup_meds.md) · [Guía de compilación y distribución](../build/README.md).

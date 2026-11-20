@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.4.2] - 2026-11-20
+
+### Corregido
+
+- Retirados `l4d2_steady_boost` y sus cvars tras su retirada de la base competitiva.
+
 ## [2.4.1] - 2026-11-19
 
 ### Cambiado
